@@ -9,10 +9,10 @@ class DAR_File:
         Keyword Arguments:
         file: a file object created with the open command and "rb" (minimum) access.
         filename: a filename string pointing to a DAR file, unnecessary if infile is provided."""
-        if "file" in kwargs.keys() or "filename" in kwargs.keys():
+        if "file" in list(kwargs.keys()) or "filename" in list(kwargs.keys()):
             try: self.infile = kwargs.get("file", open(kwargs["filename"], "rb"))
             except: 
-                print "Failed to open file"
+                print("Failed to open file")
                 exit()
             if not DAR_File.isDARFile(self.infile):
                 pass # we need to throw some sort of error here
@@ -20,7 +20,7 @@ class DAR_File:
             self.infile.seek(0)
             self.fileCount, self.fileDataOffset, self.fileNamesOffset, self.fileInfoOffset = unpack("<IIII", self.infile.read(16))
             self.fileInfo = []
-            for i in xrange(self.fileCount):
+            for i in range(self.fileCount):
                 self.infile.seek(self.fileInfoOffset + (16 * i))
                 self.fileInfo.append({})
                 filenameOffset, self.fileInfo[i]["compressedSize"], self.fileInfo[i]["fileSize"], self.fileInfo[i]["fileOffset"] = unpack("<IIII", self.infile.read(16))
@@ -54,9 +54,9 @@ class DAR_File:
             try:
                 os.mkdir(directory)
             except OSError:
-                print "Couldn't create directory"
+                print("Couldn't create directory")
                 return
-        for i in xrange(self.fileCount):
+        for i in range(self.fileCount):
             self.extractFile(i, 0, directory)
     def extractFile(self, fileindex, initialindex=0, directory=""):
         """Extracts the file at fileindex.
@@ -86,7 +86,7 @@ class DAR_File:
             try:
                 data = zlib.decompress(self.infile.read(self.fileInfo[fi]["compressedSize"]))
             except:
-                print "File at index %i (from initial index %i) failed to decompress despite appearing to be compressed. Outputting (compressed?) data to %s" % (fileindex, initialindex, fn)
+                print("File at index %i (from initial index %i) failed to decompress despite appearing to be compressed. Outputting (compressed?) data to %s" % (fileindex, initialindex, fn))
                 self.infile.seek(self.fileInfo[fi]["fileOffset"])
                 data = self.infile.read(self.fileInfo[fi]["compressedSize"])
         else:
@@ -104,7 +104,7 @@ class DAR_File:
         l = self.longestFileName - 8
         if l < 8: l = 8
         infostr = "DAR Container: \"%s\", %i files\nFile Data: %0#10X, File Descriptors: %0#10X, Filenames: %0#10X\n\n   Index\t%sFilename\tCompressed\tStored Size\t Full Size\t    Offset" % (self.DARFileName, self.fileCount, self.fileDataOffset, self.fileInfoOffset, self.fileNamesOffset, " " * l)
-        for i in xrange(self.fileCount):
+        for i in range(self.fileCount):
             file = self.fileInfo[i]
             if file["compressed"]: ss = file["compressedSize"]
             else: ss = file["fileSize"]

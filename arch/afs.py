@@ -15,12 +15,12 @@ class AFS_File:
         self.fileCount = unpack("<I", infile.read(4))[0]
         self.fileInfo = []
         # get each file's offset and size
-        for i in xrange(self.fileCount):
+        for i in range(self.fileCount):
             self.fileInfo.append({})
             self.fileInfo[i]["dataOffset"], self.fileInfo[i]["dataRunLength"] = unpack("<II", infile.read(8))
         fileNamesOffset, fileNamesRunLength = unpack("<II", infile.read(8))
         infile.seek(fileNamesOffset)
-        for i in xrange(self.fileCount):
+        for i in range(self.fileCount):
             self.fileInfo[i]["fileName"] = infile.read(32).strip("\0")
             self.fileInfo[i]["u"] = unpack("<IIII", infile.read(16))
         self.infile = infile
@@ -32,10 +32,10 @@ class AFS_File:
         if outputdirectory == os.getcwd(): outputdirectory = self.AFSFileName.split(".")[0] + "_files"
         try: os.mkdir(outputdirectory)
         except: pass # chances are it failed because it exists and we tried creating it
-        for i in xrange(self.fileCount):
+        for i in range(self.fileCount):
             self.extractFile(i, outputdirectory=outputdirectory)
             if extrainfo:
-                print "Outputting %s as %08X_%s to %s" % (self.fileInfo[i]["fileName"], self.fileInfo[i]["dataOffset"], self.fileInfo[i]["fileName"], outputdirectory) 
+                print("Outputting %s as %08X_%s to %s" % (self.fileInfo[i]["fileName"], self.fileInfo[i]["dataOffset"], self.fileInfo[i]["fileName"], outputdirectory)) 
     def extractFile(self, fileindex, outputdirectory=os.getcwd(), initialindex=0):
         """Extracts a single file from AFS.
         
@@ -55,10 +55,10 @@ class AFS_File:
     def info(self):
         """Prints out info about the AFS file and contained files"""
         infostr = "AFS Container \"%s\", %i files\n\n   Index\t                        Filename\t      Size\t    Offset\t        U1\t        U2\t        U3\t        U4" % (self.AFSFileName, self.fileCount)
-        for i in xrange(self.fileCount):
+        for i in range(self.fileCount):
             file = self.fileInfo[i]
             infostr = "%s\n%#8i\t%32s\t%#10i\t%0#10X\t%0#10X\t%0#10X\t%0#10X\t%0#10X" % (infostr, i, file["fileName"], file["dataRunLength"], file["dataOffset"], file["u"][0], file["u"][1], file["u"][2], file["u"][3])
-        print infostr
+        print(infostr)
     @staticmethod
     def isAFSFile(infile):
         """Class method for detecting if infile is an AFS file"""
@@ -72,5 +72,5 @@ class AFS_File:
 if __name__=="__main__":
     usage = "Usage: [python] %s [mode] [options] inputfile\n\nCommands:\n\tE, e: default beahvior, extracts all files in AFS\n\tI, i: print information and exit\n\tO, o: output files to specific directory (o directory)\n\tV, v: output extra information, only meaningful in extract mode (using e flag)\n" % sys.argv[0]
     if len(sys.argv) < 2:
-        print usage
+        print(usage)
         exit

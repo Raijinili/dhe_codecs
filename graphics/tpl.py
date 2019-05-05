@@ -55,13 +55,13 @@ class TPL_File:
                 self.textures[i]['pInfo'] = pInfo
                 self.textures[i]['palette'] = p
             if self.textures[i]['tFormat'] == 0xFFFF:
-            	if not self.spriteData:
+                if not self.spriteData:
                     self.spriteData = [self.textures[i]]
                     for tdat in self.textures:
                         if tdat['tFormat'] != 0xFFFF:
                             self.td = tdat
-            	else:
-            		self.spriteData.append(self.textures[i])
+                else:
+                    self.spriteData.append(self.textures[i])
         if self.spriteData:
             self.textureCount -= len(self.spriteData)
             for i in range(len(self.spriteData)):

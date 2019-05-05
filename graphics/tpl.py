@@ -17,12 +17,11 @@ class TPL_File:
     def __init__(self, *, file=None, filename=None):
         #assume infile is functional
         if file is not None or filename is not None:
-            try: self.infile = file or open(filename, "rb")
-            except:
-                print("Failed to open file")
-                return
+            self.infile = file or open(filename, "rb")
+        else:
+            raise NotImplementedError("Can't create blank TPL file.")
         if not TPL_File.isTPL(self.infile):
-            pass #something better needs to happen
+            raise ValueError("Input file isn't a TPL file.")
         self.TPLFileName = self.infile.name.split(os.sep)[-1]
         self.infile.seek(0, 2)
         self.fileLength = self.infile.tell()
@@ -99,11 +98,7 @@ class TPL_File:
             targetDir = os.getcwd()
             if ((self.spriteCount > 0) and (self.textureCount + self.spriteCount > 1)) or (self.textureCount > 1):
                 targetDir = os.path.join(targetDir, self.TPLFileName.split('.')[0])
-        if not os.access(targetDir, os.F_OK):
-            try: os.mkdir(targetDir)
-            except OSError:
-                print("Couldn't access " + targetDir)
-                return False
+        os.makedirs(targetDir, exist_ok=True)
         if (self.spriteCount > 0 and self.textureCount > 1) or (self.spriteCount == 0):
             print("Processing Textures")
             for i in range(self.textureCount):
@@ -125,7 +120,7 @@ class TPL_File:
         
     def extractTexture(self, texIndex, filename=None, targetDir=os.getcwd()):
         if texIndex >= len(self.textures):
-            raise Exception("texIndex outside of list range")
+            raise IndexError("texIndex outside of list range: %r" % texIndex)
         if not filename: filename = "%s_tex%i.png" % (self.TPLFileName.split('.')[0], texIndex)
         img = png.Writer(self.textures[texIndex]['tWidth'], self.textures[texIndex]['tHeight'], None, False, False, 8, self.textures[texIndex]['palette'])
         with open(os.path.join(targetDir, filename), "wb") as oot:
@@ -133,7 +128,7 @@ class TPL_File:
 
     def extractSprite(self, spriteIndex, filename=None, targetDir=os.getcwd()):
         if spriteIndex >= self.spriteData[0]['sCount']:
-            raise Exception("spriteIndex outside of list range")
+            raise IndexError("spriteIndex outside of list range: %r" % spriteIndex)
         if not filename: filename = "%s_spr%i.png" % (self.TPLFileName.split('.')[0], spriteIndex)
         img = png.Writer(self.spriteData[0]['cb'][spriteIndex]['width'], self.spriteData[0]['cb'][spriteIndex]['height'], None, False, False, 8, self.td['palette'])
         with open(os.path.join(targetDir, filename), "wb") as oot:

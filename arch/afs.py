@@ -30,8 +30,7 @@ class AFS_File:
         outputdirectory: if not provided, will create new folder in current working directory.
         extrainfo: prints out status while processing file."""
         if outputdirectory == os.getcwd(): outputdirectory = self.AFSFileName.split(".")[0] + "_files"
-        try: os.mkdir(outputdirectory)
-        except: pass # chances are it failed because it exists and we tried creating it
+        os.makedirs(outputdirectory, exist_ok=True)
         for i in range(self.fileCount):
             self.extractFile(i, outputdirectory=outputdirectory)
             if extrainfo:
@@ -42,10 +41,9 @@ class AFS_File:
         fileindex: index number of specific file to extract.
         ourputdirectory: current working directory by default.
         initialindex: Default zero, if default, 0 is first index, 1 is second, etc."""
-        if fileindex-initialindex > self.fileCount or fileindex-initialindex < 0:
-            return #this is an out-of-bounds error and should probably be handled better
-        try: os.mkdir(outputdirectory)
-        except: pass # fail in silence
+        if not 0 <= fileindex - initialindex < self.fileCount:
+            raise IndexError(fileindex - initialindex)
+        os.makedirs(outputdirectory, exist_ok=True)
         file = self.fileInfo[fileindex - initialindex]
         self.infile.seek(file["dataOffset"])
         fn = "%08X_%s" % (file["dataOffset"], file["fileName"])

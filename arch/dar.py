@@ -10,10 +10,7 @@ class DAR_File:
         file: a file object created with the open command and "rb" (minimum) access.
         filename: a filename string pointing to a DAR file, unnecessary if infile is provided."""
         if file is not None or filename is not None:
-            try: self.infile = file or open(filename, "rb")
-            except: 
-                print("Failed to open file")
-                exit()
+            self.infile = file or open(filename, "rb")
             if not DAR_File.isDARFile(self.infile):
                 pass # we need to throw some sort of error here
             self.DARFileName = self.infile.name.split(os.sep)[-1]
@@ -49,12 +46,7 @@ class DAR_File:
         directory: the directory to output the files too. If it doesn't exist, it will be created. Defaults to the DAR file's name."""
         if not directory:
             directory = self.DARFileName.split('.')[0]
-        if not os.access(directory, os.F_OK): 
-            try:
-                os.mkdir(directory)
-            except OSError:
-                print("Couldn't create directory")
-                return
+        os.makedirs(directory, exist_ok=True)
         for i in range(self.fileCount):
             self.extractFile(i, 0, directory)
     def extractFile(self, fileindex, initialindex=0, directory=""):
@@ -74,17 +66,13 @@ class DAR_File:
         if len(fa) > 1:
             for d in fa[:-1]:
                 fn = os.path.join(fn, d)
-                if not os.access(fn, os.F_OK): 
-                    try:
-                        os.mkdir(fn)
-                    except OSError:
-                        pass #dir probably exists, but we should have a better failing mechanism than this
+                os.makedirs(fn, exist_ok=True)
         fn = os.path.join(fn, "%08X_%s" % (self.fileInfo[fi]["fileOffset"], fa[-1]))
         ofile = open(fn, "wb")
         if self.fileInfo[fi]["compressed"]:
             try:
                 data = zlib.decompress(self.infile.read(self.fileInfo[fi]["compressedSize"]))
-            except:
+            except zlib.error:
                 print("File at index %i (from initial index %i) failed to decompress despite appearing to be compressed. Outputting (compressed?) data to %s" % (fileindex, initialindex, fn))
                 self.infile.seek(self.fileInfo[fi]["fileOffset"])
                 data = self.infile.read(self.fileInfo[fi]["compressedSize"])

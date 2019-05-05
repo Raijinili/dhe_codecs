@@ -34,10 +34,7 @@ class GMP_File:
             except IOError:
                 print(self.GMPFileName + " was closed, and we couldn't reopen it. Quitting...")
                 exit()
-        try:
-            os.mkdirs(outputdirectory)
-        except:
-            pass
+        os.makedirs(outputdirectory, exist_ok=True)
         for i in range(self.fileCount):
             self.infile.seek(self.fileDescriptors[i]["offset"])
             filedata = self.infile.read(self.fileDescriptors[i]["rl"])
@@ -70,12 +67,8 @@ if __name__=="__main__":
             elif sys.argv[i] in ['v', 'V']:
                 verbose = True
             else:
-                try:
-                    infile = open(sys.argv[i], "rb")
-                    filegiven = True
-                except:
-                    "Unable to open the file " + sys.argv[i]
-                    exit()
+                infile = open(sys.argv[i], "rb")
+                filegiven = True
         if not filegiven:
             print(usage)
             exit()

@@ -3,14 +3,14 @@ from struct import *
 
 
 class DAR_File:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *, file=None, filename=None, create=None):
         """Returns DAR_File object representing a DAR container file.
 
         Keyword Arguments:
         file: a file object created with the open command and "rb" (minimum) access.
         filename: a filename string pointing to a DAR file, unnecessary if infile is provided."""
-        if "file" in list(kwargs.keys()) or "filename" in list(kwargs.keys()):
-            try: self.infile = kwargs.get("file", open(kwargs["filename"], "rb"))
+        if file is not None or filename is not None:
+            try: self.infile = file or open(filename, "rb")
             except: 
                 print("Failed to open file")
                 exit()
@@ -40,8 +40,7 @@ class DAR_File:
                 if l > self.longestFileName: self.longestFileName = l
             self.outfile = None
         else: # make a DAR file
-            try: self.outfile = open(kwargs.get("create"), "wb")
-            except: pass
+            self.outfile = open(create, "wb")
             self.infile = None
     def extractFiles(self, directory=None):
         """Extracts all files from DAR archive.

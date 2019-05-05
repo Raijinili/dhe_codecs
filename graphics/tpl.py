@@ -14,11 +14,10 @@ class TPL_DBlock:
 # No other methodss necessary?
 
 class TPL_File:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *, file=None, filename=None):
         #assume infile is functional
-        #print kwargs.viewitems()
-        if "file" in list(kwargs.keys()) or "filename" in list(kwargs.keys()):
-            try: self.infile = kwargs.get("file", open(kwargs["filename"], "rb"))
+        if file is not None or filename is not None:
+            try: self.infile = file or open(filename, "rb")
             except:
                 print("Failed to open file")
                 return

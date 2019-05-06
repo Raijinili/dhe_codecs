@@ -67,6 +67,14 @@ class AFS_File:
             return True
         return False
 
+    def close(self):
+        if getattr(self, 'infile', None) is not None:
+            self.infile.close()
+        if getattr(self, 'outfile', None) is not None:
+            self.outfile.close()
+    def __del__(self):
+        self.close()
+
 _usage_message = """Usage: [python] %s [mode] [options] inputfile
 
 Commands:

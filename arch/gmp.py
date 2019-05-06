@@ -50,6 +50,13 @@ class GMP_File:
             parts.append(_file_info_format % self.fileDescriptors[i])
         return ''.join(parts)
 
+    def close(self):
+        if getattr(self, 'infile', None) is not None:
+            self.infile.close()
+        if getattr(self, 'outfile', None) is not None:
+            self.outfile.close()
+    def __del__(self):
+        self.close()
 
 
 _usage_message = """Usage:	[python] %s [options] file.gmp
@@ -81,20 +88,20 @@ if __name__=="__main__":
             elif sys.argv[i] in ['v', 'V']:
                 verbose = True
             else:
-                infile = open(sys.argv[i], "rb")
+                inpath = sys.argv[i]
                 filegiven = True
         if not filegiven:
             print(_usage_message)
             exit()
-    gmp = GMP_File(infile)
-    if verbose:
-        print(gmp.info())
-        print("Extracting files...")
-        print()
-    if od != "":
-        gmp.extractFiles(od)
-    else:
-        gmp.extractFiles()
-    infile.close()
+    with open(inpath, 'rb') as infile:
+        gmp = GMP_File(infile)
+        if verbose:
+            print(gmp.info())
+            print("Extracting files...")
+            print()
+        if od != "":
+            gmp.extractFiles(od)
+        else:
+            gmp.extractFiles()
 
 

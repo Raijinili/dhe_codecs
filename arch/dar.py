@@ -100,6 +100,14 @@ class DAR_File:
     def isDARFile(infile):
         return False #for now
 
+    def close(self):
+        if getattr(self, 'infile', None) is not None:
+            self.infile.close()
+        if getattr(self, 'outfile', None) is not None:
+            self.outfile.close()
+    def __del__(self):
+        self.close()
+
 infostr_format = """DAR Container: "%s", %i files
 File Data: %0#10X, File Descriptors: %0#10X, Filenames: %0#10X
 

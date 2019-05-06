@@ -188,6 +188,13 @@ class TPL_File:
         #the issue here, since there's no marker for TPL files in them as Sting uses them, is how to identify
         pass
 
+    def close(self):
+        if getattr(self, 'infile', None) is not None:
+            self.infile.close()
+        if getattr(self, 'outfile', None) is not None:
+            self.outfile.close()
+    def __del__(self):
+        self.close()
 
 
 if __name__=="__main__":

@@ -31,11 +31,11 @@ class DAR_File:
                 buf = bytearray()
                 c = self.infile.read(1)
                 while c != b'\x00':
-                    buf.append(c)
+                    buf.extend(c)
                     c = self.infile.read(1)
-                fileName = b''.join(buf).decode(encoding='ascii')
+                fileName = buf.decode(encoding='ascii')
                 self.fileInfo[i]["fileName"] = fileName
-                self.longestFileName = max(self.longestFileName, len(curFileName))
+                self.longestFileName = max(self.longestFileName, len(fileName))
             self.outfile = None
         else: # make a DAR file
             self.outfile = open(create, "wb")
@@ -67,7 +67,7 @@ class DAR_File:
         fname = os.path.basename(fpath)
         dpath = os.path.dirname(fpath)
         fn = os.path.join(dpath, "%08X_%s" % (self.fileInfo[fi]["fileOffset"], fname))
-        os.makedirs(os.path.dirname(dpath), exist_ok=True)
+        os.makedirs(os.path.dirname(fn), exist_ok=True)
         if self.fileInfo[fi]["compressed"]:
             try:
                 data = zlib.decompress(self.infile.read(self.fileInfo[fi]["compressedSize"]))

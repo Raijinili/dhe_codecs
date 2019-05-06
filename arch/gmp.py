@@ -1,4 +1,4 @@
-import sys, os, zlib
+import sys, os, zlib, os.path
 from struct import *
 
 
@@ -8,7 +8,8 @@ verbose = False
 class GMP_File:
     def __init__(self, infile):
         """Class representing the GMP archive format."""
-        self.GMPFileName = infile.name #######
+        self.GMPFileName = os.path.basename(infile.name)
+        self.fpath = os.path.abspath(infile.name)
         infile.seek(0)
         self.fileCount, self.descriptorOffset, self.unknown0, self.unknown1 = unpack("<IIII", infile.read(16))
         self.fileDescriptors = []
@@ -31,9 +32,9 @@ class GMP_File:
             outputdirectory = self.GMPFileName + "_files"
         if self.infile.closed:
             try:
-                self.infile = open(self.GMPFileName, 'rb')
+                self.infile = open(self.fpath, 'rb')
             except IOError:
-                print(self.GMPFileName + " was closed, and we couldn't reopen it. Quitting...")
+                print(self.fpath + " was closed, and we couldn't reopen it. Quitting...")
                 exit()
         os.makedirs(outputdirectory, exist_ok=True)
         for i in range(self.fileCount):

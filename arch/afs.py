@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, os.path
 from struct import *
 
 
@@ -8,7 +8,8 @@ class AFS_File:
         """Takes file object, returns AFS_File object.
 
         infile: file object, usually obtained via open command. Must be at least "rb" mode"""
-        self.AFSFileName = infile.name.split(os.sep)[-1]
+        self.AFSFileName = os.path.basename(infile.name)
+        self.fpath = os.path.abspath(infile.name)
         if not AFS_File.isAFSFile(infile):
             pass #we need to throw some sort of agreed upon error here
         infile.seek(4)

@@ -1,4 +1,4 @@
-import os, sys, zlib
+import os, sys, zlib, os.path
 from struct import *
 
 
@@ -13,7 +13,8 @@ class DAR_File:
             self.infile = file or open(filename, "rb")
             if not DAR_File.isDARFile(self.infile):
                 pass # we need to throw some sort of error here
-            self.DARFileName = self.infile.name.split(os.sep)[-1]
+            self.DARFileName = os.path.basename(self.infile.name)
+            self.fpath = os.path.abspath(self.infile.name)
             self.infile.seek(0)
             self.fileCount, self.fileDataOffset, self.fileNamesOffset, self.fileInfoOffset = unpack("<IIII", self.infile.read(16))
             self.fileInfo = []
@@ -45,11 +46,12 @@ class DAR_File:
         Keyword Arguments:
         directory: the directory to output the files too. If it doesn't exist, it will be created. Defaults to the DAR file's name."""
         if directory is None:
-            directory = self.DARFileName.split('.')[0]
+            directory = os.path.splitext(self.fpath)[0] or "."
+                #^ The `or "."` prevents accidental root write.
         os.makedirs(directory, exist_ok=True)
         for i in range(self.fileCount):
-            self.extractFile(i, 0, directory)
-    def extractFile(self, fileindex, initialindex=0, directory=""):
+            self.extractFile(i, 0, directory=directory)
+    def extractFile(self, fileindex, initialindex=0, directory="."):
         """Extracts the file at fileindex.
 
         Arguments:
@@ -61,13 +63,11 @@ class DAR_File:
         # does this default to the CWD or the directory in which the DAR is stored - experiments are necessary!
         fi = fileindex - initialindex
         self.infile.seek(self.fileInfo[fi]["fileOffset"])
-        fa = self.fileInfo[fi]["fileName"].split('/')
-        fn = directory
-        if len(fa) > 1:
-            for d in fa[:-1]:
-                fn = os.path.join(fn, d)
-                os.makedirs(fn, exist_ok=True)
-        fn = os.path.join(fn, "%08X_%s" % (self.fileInfo[fi]["fileOffset"], fa[-1]))
+        fpath = os.path.join(directory, self.fileInfo[fi]["fileName"])
+        fname = os.path.basename(fpath)
+        dpath = os.path.dirname(fpath)
+        fn = os.path.join(dpath, "%08X_%s" % (self.fileInfo[fi]["fileOffset"], fname))
+        os.makedirs(os.path.dirname(dpath), exist_ok=True)
         if self.fileInfo[fi]["compressed"]:
             try:
                 data = zlib.decompress(self.infile.read(self.fileInfo[fi]["compressedSize"]))

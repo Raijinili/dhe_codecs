@@ -1,4 +1,4 @@
-import os, sys, png
+import os, sys, png, os.path
 from struct import *
 
 
@@ -22,7 +22,8 @@ class TPL_File:
             raise NotImplementedError("Can't create blank TPL file.")
         if not TPL_File.isTPL(self.infile):
             raise ValueError("Input file isn't a TPL file.")
-        self.TPLFileName = self.infile.name.split(os.sep)[-1]
+        self.TPLFileName = os.path.basename(self.infile.name)
+        self.fpath = os.path.abspath(self.infile.name)
         self.infile.seek(0, 2)
         self.fileLength = self.infile.tell()
         self.infile.seek(0)

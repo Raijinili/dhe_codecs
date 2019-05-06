@@ -20,14 +20,13 @@ class GMP_File:
                 self.fileDescriptors[i]["name"] = "f" + str(i)
             self.fileDescriptors[i]["rl"], self.fileDescriptors[i]["offset"], self.fileDescriptors[i]["unknown"] = unpack("<III", infile.read(12))
         self.infile = infile
-    def extractFiles(self, outputdirectory=os.getcwd()):
+    def extractFiles(self, outputdirectory=None):
         """Extract all files contained within the GMP file to a folder outputdirectory.
 
-        outputdirectory: a directory name or location for files. Containing a directory separator, it is interpretated as an absolute path."""
-        if os.path.split(outputdirectory)[0] == '':
-            outputdirectory = os.path.join(os.getcwd(), outputdirectory)
-        else:
-            outputdirectory = os.path.join(outputdirectory, self.GMPFileName + "_files")
+        outputdirectory: a directory name or location for files. If not provided, then use f"{GMPFileName}_files".
+        """
+        if outputdirectory is None:
+            outputdirectory = self.GMPFileName + "_files"
         if self.infile.closed:
             try:
                 self.infile = open(self.GMPFileName)
@@ -40,7 +39,7 @@ class GMP_File:
             filedata = self.infile.read(self.fileDescriptors[i]["rl"])
             if verbose:
                 print("Writing file %(name)s (unknown descriptor: %(unknown)08x)" % self.fileDescriptors[i])
-            with open((self.GMPFileName + "_files/" + self.fileDescriptors[i]["name"]).encode(), "wb") as oot:
+            with open(os.path.join(outputdirectory, self.fileDescriptors[i]["name"].encode()), "wb") as oot:
                 oot.write(filedata)
     def info(self):
         """Return a string containing information on the file represented by this object."""

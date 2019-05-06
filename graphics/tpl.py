@@ -95,7 +95,7 @@ class TPL_File:
     def extractAll(self, targetDir=None, filenameRoot=None):
         print("%i textures and %i sprites" % (self.textureCount, self.spriteCount))
         if not targetDir:
-            targetDir = os.getcwd()
+            targetDir = '.'
             if ((self.spriteCount > 0) and (self.textureCount + self.spriteCount > 1)) or (self.textureCount > 1):
                 targetDir = os.path.join(targetDir, self.TPLFileName.split('.')[0])
         os.makedirs(targetDir, exist_ok=True)
@@ -118,7 +118,7 @@ class TPL_File:
             self.td.pop("textureData")
         print("Done")
         
-    def extractTexture(self, texIndex, filename=None, targetDir=os.getcwd()):
+    def extractTexture(self, texIndex, filename=None, targetDir='.'):
         if texIndex >= len(self.textures):
             raise IndexError("texIndex outside of list range: %r" % texIndex)
         if not filename: filename = "%s_tex%i.png" % (self.TPLFileName.split('.')[0], texIndex)
@@ -126,7 +126,7 @@ class TPL_File:
         with open(os.path.join(targetDir, filename), "wb") as oot:
             img.write_array(oot, self.e_t(texIndex))
 
-    def extractSprite(self, spriteIndex, filename=None, targetDir=os.getcwd()):
+    def extractSprite(self, spriteIndex, filename=None, targetDir='.'):
         if spriteIndex >= self.spriteData[0]['sCount']:
             raise IndexError("spriteIndex outside of list range: %r" % spriteIndex)
         if not filename: filename = "%s_spr%i.png" % (self.TPLFileName.split('.')[0], spriteIndex)

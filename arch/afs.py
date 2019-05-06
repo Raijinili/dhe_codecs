@@ -24,18 +24,19 @@ class AFS_File:
             self.fileInfo[i]["fileName"] = infile.read(32).strip("\0")
             self.fileInfo[i]["u"] = unpack("<IIII", infile.read(16))
         self.infile = infile
-    def extractFiles(self, outputdirectory=os.getcwd(), extrainfo=False):
+    def extractFiles(self, outputdirectory=None, extrainfo=False):
         """Extracts all files within to outputdirectory.
         
         outputdirectory: if not provided, will create new folder in current working directory.
         extrainfo: prints out status while processing file."""
-        if outputdirectory == os.getcwd(): outputdirectory = self.AFSFileName.split(".")[0] + "_files"
+        if outputdirectory is None:
+            outputdirectory = self.AFSFileName.split(".")[0] + "_files"
         os.makedirs(outputdirectory, exist_ok=True)
         for i in range(self.fileCount):
             self.extractFile(i, outputdirectory=outputdirectory)
             if extrainfo:
                 print("Outputting %s as %08X_%s to %s" % (self.fileInfo[i]["fileName"], self.fileInfo[i]["dataOffset"], self.fileInfo[i]["fileName"], outputdirectory)) 
-    def extractFile(self, fileindex, outputdirectory=os.getcwd(), initialindex=0):
+    def extractFile(self, fileindex, outputdirectory='.', initialindex=0):
         """Extracts a single file from AFS.
         
         fileindex: index number of specific file to extract.

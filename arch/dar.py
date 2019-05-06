@@ -44,7 +44,7 @@ class DAR_File:
 
         Keyword Arguments:
         directory: the directory to output the files too. If it doesn't exist, it will be created. Defaults to the DAR file's name."""
-        if not directory:
+        if directory is None:
             directory = self.DARFileName.split('.')[0]
         os.makedirs(directory, exist_ok=True)
         for i in range(self.fileCount):

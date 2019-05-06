@@ -173,12 +173,12 @@ class TPL_File:
         den = 2 if (t['tFormat'] == 4) else 1
         #extraction
         self.infile.seek(t['tOffset'])
-        td = unpack("<" + str(bytes/den) + "B", self.infile.read(bytes/den))
+        td = unpack("<" + str(bytes//den) + "B", self.infile.read(bytes//den))
         if t['tFormat'] == 4:
             td = [item for sublist in [[m&0x0F, (m&0xF0)>>4] for m in td] for item in sublist] #split bytes and then flatten list
         for j in range(t['tHeight']):
             for k in range(t['tWidth']):
-                pd.append(td[((j/8) * (t['tWidth']/(16*den)) * (128*den)) + ((j%8) * (16*den)) + (k%(16*den)) + ((k/(16*den)) * (128*den))])
+                pd.append(td[((j//8) * (t['tWidth']//(16*den)) * (128*den)) + ((j%8) * (16*den)) + (k%(16*den)) + ((k//(16*den)) * (128*den))])
         return pd
 
     def info(self):

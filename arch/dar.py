@@ -30,7 +30,7 @@ class DAR_File:
                 # possible - read all the strings in one go and split the giant string at each \x00
                 buf = bytearray()
                 c = self.infile.read(1)
-                while c != b'\x00':
+                while c and c != b'\x00':
                     buf.extend(c)
                     c = self.infile.read(1)
                 fileName = buf.decode(encoding='ascii')

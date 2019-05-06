@@ -94,7 +94,7 @@ class DAR_File:
             file = self.fileInfo[i]
             if file["compressed"]: ss = file["compressedSize"]
             else: ss = file["fileSize"]
-            parts.append(_file_info_format % (i, file["fileName"], file["compressed"], ss, file["fileSize"], file["fileOffset"]))
+            parts.append(_file_info_format % (i, file["fileName"].rjust(l+8), file["compressed"], ss, file["fileSize"], file["fileOffset"]))
         return ''.join(parts)
     @staticmethod
     def isDARFile(infile):
@@ -113,7 +113,7 @@ File Data: %0#10X, File Descriptors: %0#10X, Filenames: %0#10X
 
    Index	%sFilename	Compressed	Stored Size	 Full Size	    Offset
 """
-_file_info_format = """%#8i	%"+str(l+8)+"s	%10s	%0#10X	 %0#10X	%0#10X
+_file_info_format = """%#8i	%s	%10s	%0#10X	 %0#10X	%0#10X
 """
 
 

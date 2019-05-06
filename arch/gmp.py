@@ -34,8 +34,7 @@ class GMP_File:
             try:
                 self.infile = open(self.fpath, 'rb')
             except IOError:
-                print(self.fpath + " was closed, and we couldn't reopen it. Quitting...")
-                exit()
+                raise IOError(self.fpath + " was closed, and we couldn't reopen it. Quitting...")
         os.makedirs(outputdirectory, exist_ok=True)
         for i in range(self.fileCount):
             self.infile.seek(self.fileDescriptors[i]["offset"])

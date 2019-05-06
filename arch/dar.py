@@ -90,22 +90,25 @@ class DAR_File:
         Returns formatted string of information on DAR_File object."""
         l = self.longestFileName - 8
         if l < 8: l = 8
-        infostr = infostr_format % (self.DARFileName, self.fileCount, self.fileDataOffset, self.fileInfoOffset, self.fileNamesOffset, " " * l)
+        parts = [infostr_format % (self.DARFileName, self.fileCount, self.fileDataOffset, self.fileInfoOffset, self.fileNamesOffset, " " * l)]
         for i in range(self.fileCount):
             file = self.fileInfo[i]
             if file["compressed"]: ss = file["compressedSize"]
             else: ss = file["fileSize"]
-            infostr = ("%s\n%#8i\t%"+str(l+8)+"s\t%10s\t%0#10X\t %0#10X\t%0#10X") % (infostr, i, file["fileName"], file["compressed"], ss, file["fileSize"], file["fileOffset"])
-        return infostr
+            parts.append(_file_info_format % (i, file["fileName"], file["compressed"], ss, file["fileSize"], file["fileOffset"]))
+        return ''.join(parts)
     @staticmethod
     def isDARFile(infile):
         return False #for now
 
-infostr_format = """DAR Container: \"%s\", %i files
+infostr_format = """DAR Container: "%s", %i files
 File Data: %0#10X, File Descriptors: %0#10X, Filenames: %0#10X
 
    Index	%sFilename	Compressed	Stored Size	 Full Size	    Offset
 """
+_file_info_format = """%#8i	%"+str(l+8)+"s	%10s	%0#10X	 %0#10X	%0#10X
+"""
+
 
 if __name__=="__main__":
     pass

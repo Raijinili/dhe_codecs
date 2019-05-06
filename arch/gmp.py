@@ -47,7 +47,7 @@ class GMP_File:
         parts = [_info_format % (self.fileCount, self.descriptorOffset, self.unknown0, self.unknown1, "Filename", "Size", "Offset")]
         for i in range(self.fileCount):
             parts.append(_file_info_format % self.fileDescriptors[i])
-        return '\n'.join(parts) + '\n'
+        return ''.join(parts)
 
 
 
@@ -60,9 +60,11 @@ Options:
 
 _info_format = """Files: %d	Descriptor offset: %08x	Unknown 1: %08x	Uknown 2: %08x
 
-%20s	%8s	%8s"""
+%20s	%8s	%8s
+"""
 
-_file_info_format = """%(name)20s	%(rl)08x	%(offset)08x"""
+_file_info_format = """%(name)20s	%(rl)08x	%(offset)08x
+"""
 
 if __name__=="__main__":
     if len(sys.argv) < 2:

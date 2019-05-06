@@ -52,11 +52,11 @@ class AFS_File:
             oot.write(data)
     def info(self):
         """Prints out info about the AFS file and contained files"""
-        infostr = "AFS Container \"%s\", %i files\n\n   Index\t                        Filename\t      Size\t    Offset\t        U1\t        U2\t        U3\t        U4" % (self.AFSFileName, self.fileCount)
+        parts = [_info_format % (self.AFSFileName, self.fileCount)]
         for i in range(self.fileCount):
             file = self.fileInfo[i]
-            infostr = "%s\n%#8i\t%32s\t%#10i\t%0#10X\t%0#10X\t%0#10X\t%0#10X\t%0#10X" % (infostr, i, file["fileName"], file["dataRunLength"], file["dataOffset"], file["u"][0], file["u"][1], file["u"][2], file["u"][3])
-        print(infostr)
+            parts.append(_file_info_format % (i, file["fileName"], file["dataRunLength"], file["dataOffset"], file["u"][0], file["u"][1], file["u"][2], file["u"][3]))
+        return ''.join(parts)
     @staticmethod
     def isAFSFile(infile):
         """Class method for detecting if infile is an AFS file"""
@@ -74,6 +74,13 @@ Commands:
 	O, o: output files to specific directory (o directory)
 	V, v: output extra information, only meaningful in extract mode (using e flag)
 """ % sys.argv[0]
+_info_format = """AFS Container "%s", %i files
+
+   Index	                        Filename	      Size	    Offset	        U1	        U2	        U3	        U4
+"""
+_file_info_format = """%#8i	%32s	%#10i	%0#10X	%0#10X	%0#10X	%0#10X	%0#10X
+"""
+
 
 if __name__=="__main__":
     if len(sys.argv) < 2:

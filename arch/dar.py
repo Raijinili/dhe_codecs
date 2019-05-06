@@ -68,7 +68,6 @@ class DAR_File:
                 fn = os.path.join(fn, d)
                 os.makedirs(fn, exist_ok=True)
         fn = os.path.join(fn, "%08X_%s" % (self.fileInfo[fi]["fileOffset"], fa[-1]))
-        ofile = open(fn, "wb")
         if self.fileInfo[fi]["compressed"]:
             try:
                 data = zlib.decompress(self.infile.read(self.fileInfo[fi]["compressedSize"]))
@@ -78,8 +77,8 @@ class DAR_File:
                 data = self.infile.read(self.fileInfo[fi]["compressedSize"])
         else:
             data = self.infile.read(self.fileInfo[fi]["fileSize"])
-        ofile.write(data)
-        ofile.close()
+        with open(fn, "wb") as ofile:
+            ofile.write(data)
     def addFiles(self, *args, **kwargs):
         pass #will likely rely on addFile() like the extraction methods do
     def addFile(self, *args, **kwargs):

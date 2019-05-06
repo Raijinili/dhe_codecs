@@ -48,8 +48,8 @@ class AFS_File:
         file = self.fileInfo[fileindex - initialindex]
         self.infile.seek(file["dataOffset"])
         fn = "%08X_%s" % (file["dataOffset"], file["fileName"])
+        data = self.infile.read(file["dataRunLength"])
         with open(os.path.join(outputdirectory, fn), "wb") as oot:
-            data = self.infile.read(file["dataRunLength"])
             oot.write(data)
     def info(self):
         """Prints out info about the AFS file and contained files"""

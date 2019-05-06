@@ -29,7 +29,7 @@ class GMP_File:
             outputdirectory = self.GMPFileName + "_files"
         if self.infile.closed:
             try:
-                self.infile = open(self.GMPFileName)
+                self.infile = open(self.GMPFileName, 'rb')
             except IOError:
                 print(self.GMPFileName + " was closed, and we couldn't reopen it. Quitting...")
                 exit()

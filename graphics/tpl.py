@@ -187,7 +187,8 @@ class TPL_File:
     @staticmethod
     def isTPL(infile):
         #the issue here, since there's no marker for TPL files in them as Sting uses them, is how to identify
-        pass
+        NotImplemented
+        return True
 
     def close(self):
         if getattr(self, 'infile', None) is not None:

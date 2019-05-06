@@ -44,18 +44,29 @@ class GMP_File:
                 oot.write(filedata)
     def info(self):
         """Return a string containing information on the file represented by this object."""
-        str = "Files: %d\tDescriptor offset: %08x\tUnknown 1: %08x\tUknown 2: %08x\n\n%20s\t%8s\t%8s\n" % (self.fileCount, self.descriptorOffset, self.unknown0, self.unknown1, "Filename", "Size", "Offset")
+        parts = [_info_format % (self.fileCount, self.descriptorOffset, self.unknown0, self.unknown1, "Filename", "Size", "Offset")]
         for i in range(self.fileCount):
-            str += "%(name)20s\t%(rl)08x\t%(offset)08x\n" % self.fileDescriptors[i]
-        return str + "\n"
+            parts.append(_file_info_format % self.fileDescriptors[i])
+        return '\n'.join(parts) + '\n'
 
 
 
+_usage_message = """Usage:	[python] %s [options] file.gmp
+
+Options: 
+	O, o directory: output files to directory. Values containing separators will be interpreted as absolute paths.
+	V, v: verbose, output some extra information
+""" % sys.argv[0]
+
+_info_format = """Files: %d	Descriptor offset: %08x	Unknown 1: %08x	Uknown 2: %08x
+
+%20s	%8s	%8s"""
+
+_file_info_format = """%(name)20s	%(rl)08x	%(offset)08x"""
 
 if __name__=="__main__":
-    usage = "Usage:\t[python] " + sys.argv[0] + " [options] file.gmp\n\nOptions: \n\tO, o directory: output files to directory. Values containing separators will be interpreted as absolute paths.\n\tV, v: verbose, output some extra information"
     if len(sys.argv) < 2:
-        print(usage)
+        print(_usage_message)
         exit()
     else:
         od = ""
@@ -70,12 +81,13 @@ if __name__=="__main__":
                 infile = open(sys.argv[i], "rb")
                 filegiven = True
         if not filegiven:
-            print(usage)
+            print(_usage_message)
             exit()
     gmp = GMP_File(infile)
     if verbose:
         print(gmp.info())
-        print("Extracting files...\n")
+        print("Extracting files...")
+        print()
     if od != "":
         gmp.extractFiles(od)
     else:

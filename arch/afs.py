@@ -66,9 +66,16 @@ class AFS_File:
             return True
         return False
 
+_usage_message = """Usage: [python] %s [mode] [options] inputfile
+
+Commands:
+	E, e: default behavior: extracts all files in AFS
+	I, i: print information and exit
+	O, o: output files to specific directory (o directory)
+	V, v: output extra information, only meaningful in extract mode (using e flag)
+""" % sys.argv[0]
 
 if __name__=="__main__":
-    usage = "Usage: [python] %s [mode] [options] inputfile\n\nCommands:\n\tE, e: default beahvior, extracts all files in AFS\n\tI, i: print information and exit\n\tO, o: output files to specific directory (o directory)\n\tV, v: output extra information, only meaningful in extract mode (using e flag)\n" % sys.argv[0]
     if len(sys.argv) < 2:
-        print(usage)
-        exit
+        print(_usage_message)
+        exit()

@@ -17,6 +17,7 @@ class DAR_File:
             self.infile.seek(0)
             self.fileCount, self.fileDataOffset, self.fileNamesOffset, self.fileInfoOffset = unpack("<IIII", self.infile.read(16))
             self.fileInfo = []
+            self.longestFileName = 0
             for i in range(self.fileCount):
                 self.infile.seek(self.fileInfoOffset + (16 * i))
                 self.fileInfo.append({})
@@ -24,17 +25,16 @@ class DAR_File:
                 self.infile.seek(filenameOffset)
                 if self.fileInfo[i]["compressedSize"] != 0: self.fileInfo[i]["compressed"] = True
                 else: self.fileInfo[i]["compressed"] = False
-                # if anyone knows how to read inderterminate length, null-terminated strings from a binary file better than this, please change it!
+                # if anyone knows how to read indeterminate length, null-terminated strings from a binary file better than this, please change it!
                 # possible - read all the strings in one go and split the giant string at each \x00
-                self.fileInfo[i]["fileName"] = ""
-                self.longestFileName = 0
-                l = 0
+                buf = bytearray()
                 c = self.infile.read(1)
-                while c != '\x00':
-                    self.fileInfo[i]["fileName"] = self.fileInfo[i]["fileName"] + c
-                    l += 1
+                while c != b'\x00':
+                    buf.append(c)
                     c = self.infile.read(1)
-                if l > self.longestFileName: self.longestFileName = l
+                fileName = b''.join(buf).decode(encoding='ascii')
+                self.fileInfo[i]["fileName"] = fileName
+                self.longestFileName = max(self.longestFileName, len(curFileName))
             self.outfile = None
         else: # make a DAR file
             self.outfile = open(create, "wb")

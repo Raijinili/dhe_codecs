@@ -21,7 +21,7 @@ class AFS_File:
         fileNamesOffset, fileNamesRunLength = unpack("<II", infile.read(8))
         infile.seek(fileNamesOffset)
         for i in range(self.fileCount):
-            self.fileInfo[i]["fileName"] = infile.read(32).strip("\0")
+            self.fileInfo[i]["fileName"] = infile.read(32).strip(b"\0").decode('ascii')
             self.fileInfo[i]["u"] = unpack("<IIII", infile.read(16))
         self.infile = infile
     def extractFiles(self, outputdirectory=None, extrainfo=False):

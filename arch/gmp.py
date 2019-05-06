@@ -15,8 +15,10 @@ class GMP_File:
         for i in range(self.fileCount):
             infile.seek(self.descriptorOffset + i * 32)
             self.fileDescriptors.append({});
-            self.fileDescriptors[i]["name"] = infile.read(20).strip("\0") #guarding against null file names
-            if(len(self.fileDescriptors[i]["name"]) == 0):
+            self.fileDescriptors[i]["name"] = infile.read(20).strip(b"\0").decode('ascii')
+                #^ Should that be 0x20?
+            #Guarding against null file names:
+            if not self.fileDescriptors[i]["name"]:
                 self.fileDescriptors[i]["name"] = "f" + str(i)
             self.fileDescriptors[i]["rl"], self.fileDescriptors[i]["offset"], self.fileDescriptors[i]["unknown"] = unpack("<III", infile.read(12))
         self.infile = infile
@@ -39,7 +41,7 @@ class GMP_File:
             filedata = self.infile.read(self.fileDescriptors[i]["rl"])
             if verbose:
                 print("Writing file %(name)s (unknown descriptor: %(unknown)08x)" % self.fileDescriptors[i])
-            with open(os.path.join(outputdirectory, self.fileDescriptors[i]["name"].encode()), "wb") as oot:
+            with open(os.path.join(outputdirectory, self.fileDescriptors[i]["name"]), "wb") as oot:
                 oot.write(filedata)
     def info(self):
         """Return a string containing information on the file represented by this object."""
